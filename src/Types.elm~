@@ -1,0 +1,11 @@
+module Types exposing (..)
+
+type alias Model = {conf: Conf}
+type alias Conf = List {state: Int
+                       ,light: Light
+                       }
+type alias Light = {x: Int
+                   ,y: Int
+                   ,c: Int
+                   }
+type Msg = None

@@ -1,0 +1,40 @@
+module Triangle exposing (..)
+
+import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+import Svg.Events exposing (..)
+
+main = Browser.element {init = init
+                       ,update = update
+                       ,view = view
+                       ,subscriptions = subscriptions
+                       }
+
+type alias Model = {conf: Conf}
+type alias Conf = List {state: Int
+                       ,light: Light
+                       }
+type alias Light = {x: Int
+                   ,y: Int
+                   ,c: Int
+                   }
+type Msg = None
+
+init: () -> (Model, Cmd Msg)
+init _ = (Model []
+          ,Cmd.none
+          )
+
+update: Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+    (model, Cmd.none)
+
+
+view: Model -> Html Msg
+view model =
+    Html.div [] []
+
+subscriptions: Model -> Sub Msg
+subscriptions model =
+    Sub.none
