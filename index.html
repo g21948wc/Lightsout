@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Game</title>
+  <title>GameSep29</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -5173,9 +5173,9 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Types$Model = F4(
-	function (determined, undetermined, size, p) {
-		return {determined: determined, p: p, size: size, undetermined: undetermined};
+var $author$project$TypesSep29$Model = F5(
+	function (determined, undetermined, matrix, size, p) {
+		return {determined: determined, matrix: matrix, p: p, size: size, undetermined: undetermined};
 	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
@@ -5299,7 +5299,7 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
-var $author$project$Game$allOffButOne = F3(
+var $author$project$GameSep29$allOffButOne = F3(
 	function (pos, boardSize, levelNum) {
 		var pos1 = $elm$core$List$concat(
 			A2(
@@ -5338,43 +5338,47 @@ var $author$project$Game$allOffButOne = F3(
 			$elm$core$List$foldl,
 			F2(
 				function (pt, dict) {
-					return _Utils_eq(pt, pos) ? A3($elm$core$Dict$insert, pt, 1, dict) : A3($elm$core$Dict$insert, pt, 0, dict);
+					return _Utils_eq(pt, pos) ? A3(
+						$elm$core$Dict$insert,
+						pt,
+						{brightness: 1, numClick: $elm$core$Maybe$Nothing},
+						dict) : A3(
+						$elm$core$Dict$insert,
+						pt,
+						{brightness: 0, numClick: $elm$core$Maybe$Nothing},
+						dict);
 				}),
 			$elm$core$Dict$empty,
 			positions);
-		return A4($author$project$Types$Model, lights, _List_Nil, boardSize, levelNum);
+		return A5($author$project$TypesSep29$Model, lights, _List_Nil, $elm$core$Dict$empty, boardSize, levelNum);
 	});
+var $author$project$GameSep29$initLitX = 1;
+var $author$project$GameSep29$initLitY = 0;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Game$p = 3;
-var $author$project$Game$size = 3;
-var $author$project$Game$init = function (_v0) {
+var $author$project$GameSep29$p = 3;
+var $author$project$GameSep29$size = 4;
+var $author$project$GameSep29$init = function (_v0) {
 	return _Utils_Tuple2(
 		A3(
-			$author$project$Game$allOffButOne,
-			_Utils_Tuple3(($author$project$Game$size / 4) | 0, ($author$project$Game$size / 4) | 0, 1),
-			$author$project$Game$size,
-			$author$project$Game$p),
+			$author$project$GameSep29$allOffButOne,
+			_Utils_Tuple3($author$project$GameSep29$initLitX, $author$project$GameSep29$initLitY, 1),
+			$author$project$GameSep29$size,
+			$author$project$GameSep29$p),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Game$subscriptions = function (model) {
+var $author$project$GameSep29$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$LightTools$adjacent01 = F2(
-	function (_v0, _v1) {
-		var x0 = _v0.a;
-		var y0 = _v0.b;
-		var c0 = _v0.c;
-		var x1 = _v1.a;
-		var y1 = _v1.b;
-		var c1 = _v1.c;
-		return _Utils_eq(c0, c1) ? false : ((_Utils_eq(x0, x1) && _Utils_eq(y0, y1)) ? true : ((_Utils_eq(x0, x1 + 1) && (_Utils_eq(y0, y1) && (!c0))) ? true : ((_Utils_eq(x0, x1) && (_Utils_eq(y0, y1 + 1) && (!c0))) ? true : false)));
+var $author$project$TypesSep29$State = F2(
+	function (brightness, numClick) {
+		return {brightness: brightness, numClick: numClick};
 	});
-var $author$project$LightTools$adjacent = F2(
-	function (l0, l1) {
-		return A2($author$project$LightTools$adjacent01, l0, l1) || A2($author$project$LightTools$adjacent01, l1, l0);
+var $author$project$TypesSep29$Point = F2(
+	function (x, y) {
+		return {x: x, y: y};
 	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -5386,6 +5390,47 @@ var $elm$core$List$filter = F2(
 				}),
 			_List_Nil,
 			list);
+	});
+var $author$project$GameSep29$rowIndices = function (n) {
+	return A2(
+		$elm$core$List$filter,
+		function (q) {
+			return _Utils_cmp(q.x + q.y, n - 2) < 1;
+		},
+		$elm$core$List$concat(
+			A2(
+				$elm$core$List$map,
+				function (y) {
+					return A2(
+						$elm$core$List$map,
+						function (x) {
+							return A2($author$project$TypesSep29$Point, x, y);
+						},
+						A2($elm$core$List$range, 0, n - 2));
+				},
+				A2($elm$core$List$range, 0, n - 2))));
+};
+var $author$project$GameSep29$colIndices = function (n) {
+	return _Utils_ap(
+		$author$project$GameSep29$rowIndices(n),
+		_List_fromArray(
+			[
+				{x: $author$project$GameSep29$size + 1, y: $author$project$GameSep29$size + 1}
+			]));
+};
+var $author$project$LightToolsSep29$adjacent01 = F2(
+	function (_v0, _v1) {
+		var x0 = _v0.a;
+		var y0 = _v0.b;
+		var c0 = _v0.c;
+		var x1 = _v1.a;
+		var y1 = _v1.b;
+		var c1 = _v1.c;
+		return _Utils_eq(c0, c1) ? false : ((_Utils_eq(x0, x1) && _Utils_eq(y0, y1)) ? true : ((_Utils_eq(x0, x1 + 1) && (_Utils_eq(y0, y1) && (!c0))) ? true : ((_Utils_eq(x0, x1) && (_Utils_eq(y0, y1 + 1) && (!c0))) ? true : false)));
+	});
+var $author$project$LightToolsSep29$adjacent = F2(
+	function (l0, l1) {
+		return A2($author$project$LightToolsSep29$adjacent01, l0, l1) || A2($author$project$LightToolsSep29$adjacent01, l1, l0);
 	});
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
@@ -5476,7 +5521,7 @@ var $elm$core$List$member = F2(
 	});
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $elm$core$Basics$not = _Basics_not;
-var $author$project$LightTools$possibleNeighbors = function (_v0) {
+var $author$project$LightToolsSep29$possibleNeighbors = function (_v0) {
 	var x = _v0.a;
 	var y = _v0.b;
 	var c = _v0.c;
@@ -5505,18 +5550,18 @@ var $elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var $author$project$LightTools$determine = function (model) {
+var $author$project$LightToolsSep29$determine = function (model) {
 	var neighborSum = function (p) {
 		return A3(
 			$elm$core$Dict$foldl,
 			F3(
 				function (q, value, sum) {
-					return A2($author$project$LightTools$adjacent, p, q) ? (sum + value) : sum;
+					return A2($author$project$LightToolsSep29$adjacent, p, q) ? (sum + value.brightness) : sum;
 				}),
 			A2(
 				$elm$core$Maybe$withDefault,
-				0,
-				A2($elm$core$Dict$get, p, model.determined)),
+				A2($author$project$TypesSep29$State, 0, $elm$core$Maybe$Nothing),
+				A2($elm$core$Dict$get, p, model.determined)).brightness,
 			model.determined);
 	};
 	var boundary = A2(
@@ -5529,7 +5574,7 @@ var $author$project$LightTools$determine = function (model) {
 					A2(
 						$elm$core$List$filter,
 						function (u) {
-							return A2($author$project$LightTools$adjacent, pos, u);
+							return A2($author$project$LightToolsSep29$adjacent, pos, u);
 						},
 						model.undetermined)) === 1;
 			},
@@ -5545,14 +5590,17 @@ var $author$project$LightTools$determine = function (model) {
 							return A2($elm$core$List$member, q, model.undetermined) ? A3(
 								$elm$core$Dict$insert,
 								q,
-								A2(
-									$elm$core$Basics$modBy,
-									model.p,
-									(4 * model.p) - neighborSum(p)),
+								{
+									brightness: A2(
+										$elm$core$Basics$modBy,
+										model.p,
+										(4 * model.p) - neighborSum(p)),
+									numClick: $elm$core$Maybe$Nothing
+								},
 								dict2) : dict2;
 						}),
 					dict,
-					$author$project$LightTools$possibleNeighbors(p));
+					$author$project$LightToolsSep29$possibleNeighbors(p));
 			}),
 		$elm$core$Dict$empty,
 		boundary);
@@ -5572,10 +5620,186 @@ var $author$project$LightTools$determine = function (model) {
 			undetermined: newUndetermined
 		});
 };
-var $author$project$LightTools$complete = function (model) {
-	return ($elm$core$List$length(model.undetermined) > 0) ? $author$project$LightTools$complete(
-		$author$project$LightTools$determine(model)) : model;
+var $author$project$LightToolsSep29$complete = function (model) {
+	return ($elm$core$List$length(model.undetermined) > 0) ? $author$project$LightToolsSep29$complete(
+		$author$project$LightToolsSep29$determine(model)) : model;
 };
+var $pzp1997$assoc_list$AssocList$D = function (a) {
+	return {$: 'D', a: a};
+};
+var $pzp1997$assoc_list$AssocList$filter = F2(
+	function (isGood, _v0) {
+		var alist = _v0.a;
+		return $pzp1997$assoc_list$AssocList$D(
+			A2(
+				$elm$core$List$filter,
+				function (_v1) {
+					var key = _v1.a;
+					var value = _v1.b;
+					return A2(isGood, key, value);
+				},
+				alist));
+	});
+var $pzp1997$assoc_list$AssocList$foldl = F3(
+	function (func, initialResult, _v0) {
+		var alist = _v0.a;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v1, result) {
+					var key = _v1.a;
+					var value = _v1.b;
+					return A3(func, key, value, result);
+				}),
+			initialResult,
+			alist);
+	});
+var $pzp1997$assoc_list$AssocList$get = F2(
+	function (targetKey, _v0) {
+		get:
+		while (true) {
+			var alist = _v0.a;
+			if (!alist.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var _v2 = alist.a;
+				var key = _v2.a;
+				var value = _v2.b;
+				var rest = alist.b;
+				if (_Utils_eq(key, targetKey)) {
+					return $elm$core$Maybe$Just(value);
+				} else {
+					var $temp$targetKey = targetKey,
+						$temp$_v0 = $pzp1997$assoc_list$AssocList$D(rest);
+					targetKey = $temp$targetKey;
+					_v0 = $temp$_v0;
+					continue get;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $pzp1997$assoc_list$AssocList$remove = F2(
+	function (targetKey, _v0) {
+		var alist = _v0.a;
+		return $pzp1997$assoc_list$AssocList$D(
+			A2(
+				$elm$core$List$filter,
+				function (_v1) {
+					var key = _v1.a;
+					return !_Utils_eq(key, targetKey);
+				},
+				alist));
+	});
+var $pzp1997$assoc_list$AssocList$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A2($pzp1997$assoc_list$AssocList$remove, key, dict);
+		var alteredAlist = _v0.a;
+		return $pzp1997$assoc_list$AssocList$D(
+			A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(key, value),
+				alteredAlist));
+	});
+var $author$project$GameSep29$etAdd = F4(
+	function (m, ptrow1, ptrow2, alpha) {
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (ptcol, tm) {
+					var _v0 = A2(
+						$pzp1997$assoc_list$AssocList$get,
+						_Utils_Tuple2(ptrow1, ptcol),
+						tm);
+					if (_v0.$ === 'Just') {
+						var el = _v0.a;
+						var _v1 = A2(
+							$pzp1997$assoc_list$AssocList$get,
+							_Utils_Tuple2(ptrow2, ptcol),
+							tm);
+						if (_v1.$ === 'Just') {
+							var el2 = _v1.a;
+							return (!(!A2(
+								$elm$core$Basics$modBy,
+								$author$project$GameSep29$p,
+								el2 + A2($elm$core$Basics$modBy, $author$project$GameSep29$p, alpha * el)))) ? A3(
+								$pzp1997$assoc_list$AssocList$insert,
+								_Utils_Tuple2(ptrow2, ptcol),
+								A2(
+									$elm$core$Basics$modBy,
+									$author$project$GameSep29$p,
+									el2 + A2($elm$core$Basics$modBy, $author$project$GameSep29$p, alpha * el)),
+								tm) : A2(
+								$pzp1997$assoc_list$AssocList$remove,
+								_Utils_Tuple2(ptrow2, ptcol),
+								tm);
+						} else {
+							return (!(!A2($elm$core$Basics$modBy, $author$project$GameSep29$p, alpha * el))) ? A3(
+								$pzp1997$assoc_list$AssocList$insert,
+								_Utils_Tuple2(ptrow2, ptcol),
+								A2($elm$core$Basics$modBy, $author$project$GameSep29$p, alpha * el),
+								tm) : A2(
+								$pzp1997$assoc_list$AssocList$remove,
+								_Utils_Tuple2(ptrow2, ptcol),
+								tm);
+						}
+					} else {
+						return tm;
+					}
+				}),
+			m,
+			$author$project$GameSep29$colIndices($author$project$GameSep29$size));
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$GameSep29$columnEliminate = F3(
+	function (col, indices, m) {
+		if (!$elm$core$List$length(indices)) {
+			return m;
+		} else {
+			var top = A2(
+				$elm$core$Maybe$withDefault,
+				{x: 0, y: 0},
+				$elm$core$List$head(indices));
+			var pivot = A2(
+				$elm$core$Maybe$withDefault,
+				0,
+				A2(
+					$pzp1997$assoc_list$AssocList$get,
+					_Utils_Tuple2(top, col),
+					m));
+			return (!pivot) ? m : A3(
+				$elm$core$List$foldl,
+				F2(
+					function (row, mat) {
+						var el = A2(
+							$elm$core$Maybe$withDefault,
+							0,
+							A2(
+								$pzp1997$assoc_list$AssocList$get,
+								_Utils_Tuple2(row, col),
+								mat));
+						return A4($author$project$GameSep29$etAdd, mat, top, row, -el);
+					}),
+				m,
+				A2(
+					$elm$core$List$filter,
+					function (row) {
+						return !_Utils_eq(row, top);
+					},
+					$author$project$GameSep29$rowIndices($author$project$GameSep29$size)));
+		}
+	});
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -5597,9 +5821,144 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
+var $author$project$GameSep29$etMul = F3(
+	function (m, ptrow, alpha) {
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (ptcol, tm) {
+					var _v0 = A2(
+						$pzp1997$assoc_list$AssocList$get,
+						_Utils_Tuple2(ptrow, ptcol),
+						tm);
+					if (_v0.$ === 'Just') {
+						var el = _v0.a;
+						return A3(
+							$pzp1997$assoc_list$AssocList$insert,
+							_Utils_Tuple2(ptrow, ptcol),
+							A2($elm$core$Basics$modBy, $author$project$GameSep29$p, alpha * el),
+							tm);
+					} else {
+						return tm;
+					}
+				}),
+			m,
+			$author$project$GameSep29$colIndices($author$project$GameSep29$size));
+	});
+var $pzp1997$assoc_list$AssocList$empty = $pzp1997$assoc_list$AssocList$D(_List_Nil);
+var $author$project$GameSep29$etSwap = F3(
+	function (m, row1, row2) {
+		return _Utils_eq(row1, row2) ? m : A3(
+			$pzp1997$assoc_list$AssocList$foldl,
+			F3(
+				function (_v0, v, dict) {
+					var r = _v0.a;
+					var c = _v0.b;
+					return _Utils_eq(r, row1) ? A3(
+						$pzp1997$assoc_list$AssocList$insert,
+						_Utils_Tuple2(row2, c),
+						v,
+						dict) : (_Utils_eq(r, row2) ? A3(
+						$pzp1997$assoc_list$AssocList$insert,
+						_Utils_Tuple2(row1, c),
+						v,
+						dict) : A3(
+						$pzp1997$assoc_list$AssocList$insert,
+						_Utils_Tuple2(r, c),
+						v,
+						dict));
+				}),
+			$pzp1997$assoc_list$AssocList$empty,
+			m);
+	});
+var $author$project$GameSep29$pinverse = function (x) {
+	var list = A2(
+		$elm$core$List$filter,
+		function (y) {
+			return A2($elm$core$Basics$modBy, $author$project$GameSep29$p, (x * y) + $author$project$GameSep29$p) === 1;
+		},
+		A2($elm$core$List$range, 1, $author$project$GameSep29$p - 1));
+	return A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		$elm$core$List$head(list));
 };
+var $author$project$GameSep29$raiseNonzeroLowerEntry = F3(
+	function (col, indices, m) {
+		if (!$elm$core$List$length(indices)) {
+			return m;
+		} else {
+			var nonzeros = A2(
+				$elm$core$List$filter,
+				function (row) {
+					var _v2 = A2(
+						$pzp1997$assoc_list$AssocList$get,
+						_Utils_Tuple2(row, col),
+						m);
+					if (_v2.$ === 'Nothing') {
+						return false;
+					} else {
+						var el = _v2.a;
+						return (!(!el)) ? true : false;
+					}
+				},
+				indices);
+			var _v0 = $elm$core$List$head(nonzeros);
+			if (_v0.$ === 'Nothing') {
+				return m;
+			} else {
+				var top = _v0.a;
+				var _v1 = $elm$core$List$head(indices);
+				if (_v1.$ === 'Nothing') {
+					return m;
+				} else {
+					var row = _v1.a;
+					var el = A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						A2(
+							$pzp1997$assoc_list$AssocList$get,
+							_Utils_Tuple2(top, col),
+							m));
+					return (!_Utils_eq(top, row)) ? A3(
+						$author$project$GameSep29$etMul,
+						A3($author$project$GameSep29$etSwap, m, row, top),
+						row,
+						$author$project$GameSep29$pinverse(el)) : A3(
+						$author$project$GameSep29$etMul,
+						m,
+						row,
+						$author$project$GameSep29$pinverse(el));
+				}
+			}
+		}
+	});
+var $author$project$GameSep29$gaussianEliminate = F2(
+	function (m, indices) {
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (col, _v0) {
+					var mat = _v0.a;
+					var rIndices = _v0.b;
+					return _Utils_Tuple2(
+						A3(
+							$author$project$GameSep29$columnEliminate,
+							col,
+							rIndices,
+							A3($author$project$GameSep29$raiseNonzeroLowerEntry, col, rIndices, mat)),
+						A2($elm$core$List$drop, 1, rIndices));
+				}),
+			_Utils_Tuple2(
+				m,
+				$elm$core$List$reverse(
+					A2(
+						$elm$core$List$drop,
+						1,
+						$elm$core$List$reverse(indices)))),
+			indices);
+	});
+var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$pow = _Basics_pow;
 var $elm$core$Dict$sizeHelp = F2(
 	function (n, dict) {
@@ -5624,7 +5983,7 @@ var $elm$core$Dict$size = function (dict) {
 var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
 };
-var $author$project$Game$initialize = F3(
+var $author$project$GameSep29$initialize = F3(
 	function (halfSeq, boardSize, levelNum) {
 		var undetermined1 = $elm$core$List$concat(
 			A2(
@@ -5703,14 +6062,66 @@ var $author$project$Game$initialize = F3(
 							0,
 							$elm$core$Dict$size(dict),
 							0),
-						r,
+						{brightness: r, numClick: $elm$core$Maybe$Nothing},
 						dict);
 				}),
 			$elm$core$Dict$empty,
 			fullSeq);
 		var dummy2 = A2($elm$core$Debug$log, '', determined);
-		return A4($author$project$Types$Model, determined, undetermined, boardSize, levelNum);
+		return A5($author$project$TypesSep29$Model, determined, undetermined, $elm$core$Dict$empty, boardSize, levelNum);
 	});
+var $author$project$GameSep29$adjacent = F2(
+	function (v, w) {
+		var dy = v.y - w.y;
+		var dx = v.x - w.x;
+		return A2(
+			$elm$core$List$member,
+			_Utils_Tuple2(dx, dy),
+			_List_fromArray(
+				[
+					_Utils_Tuple2(0, 1),
+					_Utils_Tuple2(1, 0),
+					_Utils_Tuple2(1, -1),
+					_Utils_Tuple2(-1, 1),
+					_Utils_Tuple2(-1, 0),
+					_Utils_Tuple2(0, -1)
+				]));
+	});
+var $author$project$GameSep29$insert = F2(
+	function (_v0, tmatrix) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_eq(x, y) ? A3(
+			$pzp1997$assoc_list$AssocList$insert,
+			_Utils_Tuple2(x, y),
+			1,
+			tmatrix) : (A2($author$project$GameSep29$adjacent, x, y) ? A3(
+			$pzp1997$assoc_list$AssocList$insert,
+			_Utils_Tuple2(x, y),
+			2,
+			tmatrix) : tmatrix);
+	});
+var $author$project$GameSep29$pairs = function (n) {
+	return $elm$core$List$concat(
+		A2(
+			$elm$core$List$map,
+			function (x) {
+				return A2(
+					$elm$core$List$map,
+					function (y) {
+						return _Utils_Tuple2(x, y);
+					},
+					$author$project$GameSep29$colIndices(n));
+			},
+			$author$project$GameSep29$rowIndices(n)));
+};
+var $author$project$GameSep29$makeTmatrix = function (n) {
+	return A3(
+		$elm$core$List$foldl,
+		$author$project$GameSep29$insert,
+		$pzp1997$assoc_list$AssocList$empty,
+		$author$project$GameSep29$pairs(n));
+};
 var $elm$core$Dict$map = F2(
 	function (func, dict) {
 		if (dict.$ === 'RBEmpty_elm_builtin') {
@@ -5730,7 +6141,22 @@ var $elm$core$Dict$map = F2(
 				A2($elm$core$Dict$map, func, right));
 		}
 	});
-var $author$project$LightTools$rotation = F2(
+var $author$project$LightToolsSep29$decreaseClick = F2(
+	function (p, state) {
+		var _v0 = state.numClick;
+		if (_v0.$ === 'Nothing') {
+			return state;
+		} else {
+			var x = _v0.a;
+			return _Utils_update(
+				state,
+				{
+					numClick: $elm$core$Maybe$Just(
+						A2($elm$core$Basics$modBy, p, (x - 1) + p))
+				});
+		}
+	});
+var $author$project$LightToolsSep29$rotation = F2(
 	function (pos, model) {
 		return _Utils_update(
 			model,
@@ -5739,56 +6165,321 @@ var $author$project$LightTools$rotation = F2(
 					$elm$core$Dict$map,
 					F2(
 						function (pt, state) {
-							return (_Utils_eq(pt, pos) || A2($author$project$LightTools$adjacent, pt, pos)) ? A2($elm$core$Basics$modBy, model.p, state + 1) : state;
+							return _Utils_eq(pt, pos) ? A2(
+								$author$project$LightToolsSep29$decreaseClick,
+								model.p,
+								_Utils_update(
+									state,
+									{
+										brightness: A2($elm$core$Basics$modBy, model.p, state.brightness + 1)
+									})) : (A2($author$project$LightToolsSep29$adjacent, pt, pos) ? _Utils_update(
+								state,
+								{
+									brightness: A2($elm$core$Basics$modBy, model.p, state.brightness + 1)
+								}) : state);
 						}),
 					model.determined)
 			});
 	});
-var $author$project$Game$update = F2(
+var $pzp1997$assoc_list$AssocList$update = F3(
+	function (targetKey, alter, dict) {
+		var alist = dict.a;
+		var maybeValue = A2($pzp1997$assoc_list$AssocList$get, targetKey, dict);
+		if (maybeValue.$ === 'Just') {
+			var _v1 = alter(maybeValue);
+			if (_v1.$ === 'Just') {
+				var alteredValue = _v1.a;
+				return $pzp1997$assoc_list$AssocList$D(
+					A2(
+						$elm$core$List$map,
+						function (entry) {
+							var key = entry.a;
+							return _Utils_eq(key, targetKey) ? _Utils_Tuple2(targetKey, alteredValue) : entry;
+						},
+						alist));
+			} else {
+				return A2($pzp1997$assoc_list$AssocList$remove, targetKey, dict);
+			}
+		} else {
+			var _v2 = alter($elm$core$Maybe$Nothing);
+			if (_v2.$ === 'Just') {
+				var alteredValue = _v2.a;
+				return $pzp1997$assoc_list$AssocList$D(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(targetKey, alteredValue),
+						alist));
+			} else {
+				return dict;
+			}
+		}
+	});
+var $author$project$GameSep29$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'Determine':
 				return _Utils_Tuple2(
-					$author$project$LightTools$determine(model),
+					$author$project$LightToolsSep29$determine(model),
 					$elm$core$Platform$Cmd$none);
 			case 'Complete':
 				return _Utils_Tuple2(
-					$author$project$LightTools$complete(model),
+					$author$project$LightToolsSep29$complete(model),
 					$elm$core$Platform$Cmd$none);
 			case 'Reset':
 				return _Utils_Tuple2(
 					A3(
-						$author$project$Game$allOffButOne,
-						_Utils_Tuple3(($author$project$Game$size / 4) | 0, ($author$project$Game$size / 4) | 0, 1),
-						$author$project$Game$size,
-						$author$project$Game$p),
+						$author$project$GameSep29$allOffButOne,
+						_Utils_Tuple3(0, 0, 1),
+						$author$project$GameSep29$size,
+						$author$project$GameSep29$p),
+					$elm$core$Platform$Cmd$none);
+			case 'Solve':
+				var solCol = {x: $author$project$GameSep29$size + 1, y: $author$project$GameSep29$size + 1};
+				var neighbor0Sum = F2(
+					function (_v14, sol1) {
+						var x0 = _v14.a;
+						var y0 = _v14.b;
+						return A3(
+							$elm$core$Dict$foldl,
+							F3(
+								function (_v10, state, sum) {
+									var x1 = _v10.a;
+									var y1 = _v10.b;
+									var c = _v10.c;
+									if (_Utils_eq(x1, x0) && (_Utils_eq(y1, y0) && (c === 1))) {
+										var _v11 = state.numClick;
+										if (_v11.$ === 'Just') {
+											var num = _v11.a;
+											return A2($elm$core$Basics$modBy, model.p, (sum + num) + model.p);
+										} else {
+											return sum;
+										}
+									} else {
+										if (_Utils_eq(x1, x0 - 1) && (_Utils_eq(y1, y0) && (c === 1))) {
+											var _v12 = state.numClick;
+											if (_v12.$ === 'Just') {
+												var num = _v12.a;
+												return A2($elm$core$Basics$modBy, model.p, (sum + num) + model.p);
+											} else {
+												return sum;
+											}
+										} else {
+											if (_Utils_eq(x1, x0) && (_Utils_eq(y1, y0 - 1) && (c === 1))) {
+												var _v13 = state.numClick;
+												if (_v13.$ === 'Just') {
+													var num = _v13.a;
+													return A2($elm$core$Basics$modBy, model.p, (sum + num) + model.p);
+												} else {
+													return sum;
+												}
+											} else {
+												return sum;
+											}
+										}
+									}
+								}),
+							0,
+							sol1);
+					});
+				var augmentedMatrix1 = A3(
+					$elm$core$Dict$foldl,
+					F3(
+						function (_v9, state, dict) {
+							var x = _v9.a;
+							var y = _v9.b;
+							var c = _v9.c;
+							return ((c === 1) && (state.brightness > 0)) ? A3(
+								$pzp1997$assoc_list$AssocList$insert,
+								_Utils_Tuple2(
+									{x: x, y: y},
+									solCol),
+								A2($elm$core$Basics$modBy, model.p, model.p - state.brightness),
+								dict) : dict;
+						}),
+					$author$project$GameSep29$makeTmatrix(model.size),
+					model.determined);
+				var augmentedMatrix = A2(
+					$elm$core$Debug$log,
+					'aug',
+					A3(
+						$elm$core$Dict$foldl,
+						F3(
+							function (_v5, state, dict) {
+								var x = _v5.a;
+								var y = _v5.b;
+								var c = _v5.c;
+								return ((!c) && (state.brightness > 0)) ? A3(
+									$pzp1997$assoc_list$AssocList$update,
+									_Utils_Tuple2(
+										{x: x - 1, y: y},
+										solCol),
+									function (s) {
+										if (s.$ === 'Just') {
+											var num = s.a;
+											return $elm$core$Maybe$Just(
+												A2($elm$core$Basics$modBy, model.p, (model.p + num) + state.brightness));
+										} else {
+											return (x >= 1) ? $elm$core$Maybe$Just(
+												A2($elm$core$Basics$modBy, model.p, model.p + state.brightness)) : $elm$core$Maybe$Nothing;
+										}
+									},
+									A3(
+										$pzp1997$assoc_list$AssocList$update,
+										_Utils_Tuple2(
+											{x: x, y: y - 1},
+											solCol),
+										function (s) {
+											if (s.$ === 'Just') {
+												var num = s.a;
+												return $elm$core$Maybe$Just(
+													A2($elm$core$Basics$modBy, model.p, (model.p + num) + state.brightness));
+											} else {
+												return (y >= 1) ? $elm$core$Maybe$Just(
+													A2($elm$core$Basics$modBy, model.p, model.p + state.brightness)) : $elm$core$Maybe$Nothing;
+											}
+										},
+										A3(
+											$pzp1997$assoc_list$AssocList$update,
+											_Utils_Tuple2(
+												{x: x, y: y},
+												solCol),
+											function (s) {
+												if (s.$ === 'Just') {
+													var num = s.a;
+													return $elm$core$Maybe$Just(
+														A2($elm$core$Basics$modBy, model.p, (model.p + num) + state.brightness));
+												} else {
+													return (_Utils_cmp(x + y, $author$project$GameSep29$size - 1) < 0) ? $elm$core$Maybe$Just(
+														A2(
+															$elm$core$Debug$log,
+															'xy',
+															A2($elm$core$Basics$modBy, model.p, model.p + state.brightness))) : $elm$core$Maybe$Nothing;
+												}
+											},
+											dict))) : dict;
+							}),
+						augmentedMatrix1,
+						model.determined));
+				var solution1 = A2(
+					$pzp1997$assoc_list$AssocList$filter,
+					F2(
+						function (_v4, n) {
+							var row = _v4.a;
+							var col = _v4.b;
+							return _Utils_eq(col, solCol);
+						}),
+					A2(
+						$author$project$GameSep29$gaussianEliminate,
+						A2($elm$core$Debug$log, 'coefmat', augmentedMatrix),
+						$author$project$GameSep29$colIndices(model.size)).a);
+				var determined1 = A3(
+					$pzp1997$assoc_list$AssocList$foldl,
+					F3(
+						function (_v3, numClick, dict) {
+							var row = _v3.a;
+							var col = _v3.b;
+							var state = A2(
+								$elm$core$Maybe$withDefault,
+								A2($author$project$TypesSep29$State, 0, $elm$core$Maybe$Nothing),
+								A2(
+									$elm$core$Dict$get,
+									_Utils_Tuple3(row.x, row.y, 1),
+									dict));
+							return A3(
+								$elm$core$Dict$insert,
+								_Utils_Tuple3(row.x, row.y, 1),
+								_Utils_update(
+									state,
+									{
+										numClick: $elm$core$Maybe$Just(numClick)
+									}),
+								dict);
+						}),
+					model.determined,
+					solution1);
+				var determined = A2(
+					$elm$core$Dict$map,
+					F2(
+						function (_v1, state) {
+							var x = _v1.a;
+							var y = _v1.b;
+							var c = _v1.c;
+							if (!c) {
+								var _v2 = state.numClick;
+								if (_v2.$ === 'Just') {
+									var num = _v2.a;
+									return _Utils_update(
+										state,
+										{
+											numClick: $elm$core$Maybe$Just(
+												A2(
+													$elm$core$Basics$modBy,
+													model.p,
+													((model.p - state.brightness) + num) - A2(
+														neighbor0Sum,
+														_Utils_Tuple2(x, y),
+														determined1)))
+										});
+								} else {
+									return _Utils_update(
+										state,
+										{
+											numClick: $elm$core$Maybe$Just(
+												A2(
+													$elm$core$Basics$modBy,
+													model.p,
+													(model.p - state.brightness) - A2(
+														neighbor0Sum,
+														_Utils_Tuple2(x, y),
+														determined1)))
+										});
+								}
+							} else {
+								return state;
+							}
+						}),
+					determined1);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{determined: determined}),
 					$elm$core$Platform$Cmd$none);
 			case 'RandGenerated':
 				var rseq = msg.a;
 				return _Utils_Tuple2(
 					A3(
-						$author$project$Game$initialize,
+						$author$project$GameSep29$initialize,
 						A2($elm$core$Debug$log, 'random', rseq),
-						$author$project$Game$size,
-						$author$project$Game$p),
+						$author$project$GameSep29$size,
+						$author$project$GameSep29$p),
 					$elm$core$Platform$Cmd$none);
 			default:
-				var _v1 = msg.a;
-				var x = _v1.a;
-				var y = _v1.b;
-				var c = _v1.c;
+				var _v15 = msg.a;
+				var x = _v15.a;
+				var y = _v15.b;
+				var c = _v15.c;
 				return _Utils_Tuple2(
 					A2(
-						$author$project$LightTools$rotation,
+						$author$project$LightToolsSep29$rotation,
 						_Utils_Tuple3(x, y, c),
 						model),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Types$Reset = {$: 'Reset'};
+var $author$project$TypesSep29$Reset = {$: 'Reset'};
+var $author$project$TypesSep29$Solve = {$: 'Solve'};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$align = $elm$html$Html$Attributes$stringProperty('align');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$g = $elm$svg$Svg$trustedNode('g');
-var $author$project$Types$Clicked = function (a) {
+var $author$project$TypesSep29$Clicked = function (a) {
 	return {$: 'Clicked', a: a};
 };
 var $emptyflash$typed_svg$TypedSvg$Color$cssColorString = F2(
@@ -5889,9 +6580,12 @@ var $emptyflash$typed_svg$TypedSvg$Color$rgb = F3(
 	});
 var $elm$core$Basics$sqrt = _Basics_sqrt;
 var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
 var $elm$svg$Svg$Attributes$transform = _VirtualDom_attribute('transform');
-var $author$project$LightTools$lightView = F4(
-	function (_v0, brightness, p, size) {
+var $author$project$LightToolsSep29$lightView = F4(
+	function (_v0, state, p, size) {
 		var x = _v0.a;
 		var y = _v0.b;
 		var c = _v0.c;
@@ -5905,7 +6599,7 @@ var $author$project$LightTools$lightView = F4(
 					$elm$svg$Svg$Attributes$transform(
 					'translate (' + ($elm$core$String$fromFloat(px) + (', ' + ($elm$core$String$fromFloat(py) + ')')))),
 					$elm$svg$Svg$Events$onClick(
-					$author$project$Types$Clicked(
+					$author$project$TypesSep29$Clicked(
 						_Utils_Tuple3(x, y, c)))
 				]),
 			_List_fromArray(
@@ -5920,10 +6614,26 @@ var $author$project$LightTools$lightView = F4(
 								-($elm$core$Basics$sqrt(3) * unit)) + ' z')))))))),
 							$elm$svg$Svg$Attributes$fill(
 							$emptyflash$typed_svg$TypedSvg$Color$colorToCssRgba(
-								A3($emptyflash$typed_svg$TypedSvg$Color$rgb, ((255 / p) | 0) * (p - brightness), ((255 / p) | 0) * (p - brightness), 255))),
+								A3($emptyflash$typed_svg$TypedSvg$Color$rgb, ((255 / p) | 0) * (p - state.brightness), ((255 / p) | 0) * (p - state.brightness), 255))),
 							$elm$svg$Svg$Attributes$stroke('gray')
 						]),
-					_List_Nil)
+					_List_Nil),
+					A2(
+					$elm$svg$Svg$text_,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							function () {
+								var _v1 = state.numClick;
+								if (_v1.$ === 'Nothing') {
+									return '';
+								} else {
+									var num = _v1.a;
+									return $elm$core$String$fromInt(num);
+								}
+							}())
+						]))
 				])) : A2(
 			$elm$svg$Svg$g,
 			_List_fromArray(
@@ -5931,7 +6641,7 @@ var $author$project$LightTools$lightView = F4(
 					$elm$svg$Svg$Attributes$transform(
 					'translate (' + ($elm$core$String$fromFloat(px + unit) + (', ' + ($elm$core$String$fromFloat(py) + ')')))),
 					$elm$svg$Svg$Events$onClick(
-					$author$project$Types$Clicked(
+					$author$project$TypesSep29$Clicked(
 						_Utils_Tuple3(x, y, c)))
 				]),
 			_List_fromArray(
@@ -5946,23 +6656,39 @@ var $author$project$LightTools$lightView = F4(
 								-($elm$core$Basics$sqrt(3) * unit)) + ' z')))))))),
 							$elm$svg$Svg$Attributes$fill(
 							$emptyflash$typed_svg$TypedSvg$Color$colorToCssRgba(
-								A3($emptyflash$typed_svg$TypedSvg$Color$rgb, ((255 / p) | 0) * (p - brightness), ((255 / p) | 0) * (p - brightness), 255))),
+								A3($emptyflash$typed_svg$TypedSvg$Color$rgb, ((255 / p) | 0) * (p - state.brightness), ((255 / p) | 0) * (p - state.brightness), 255))),
 							$elm$svg$Svg$Attributes$stroke('gray')
 						]),
-					_List_Nil)
+					_List_Nil),
+					A2(
+					$elm$svg$Svg$text_,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							function () {
+								var _v2 = state.numClick;
+								if (_v2.$ === 'Nothing') {
+									return '';
+								} else {
+									var num = _v2.a;
+									return $elm$core$String$fromInt(num);
+								}
+							}())
+						]))
 				]));
 	});
-var $author$project$LightTools$boardView = function (model) {
+var $author$project$LightToolsSep29$boardView = function (model) {
 	return A2(
 		$elm$svg$Svg$g,
 		_List_Nil,
 		A3(
 			$elm$core$Dict$foldl,
 			F3(
-				function (pos, brightness, list) {
+				function (pos, state, list) {
 					return A2(
 						$elm$core$List$cons,
-						A4($author$project$LightTools$lightView, pos, brightness, model.p, model.size),
+						A4($author$project$LightToolsSep29$lightView, pos, state, model.p, model.size),
 						list);
 				}),
 			_List_Nil,
@@ -5979,25 +6705,36 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $author$project$Game$view = function (model) {
+var $author$project$GameSep29$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$align('center')
+			]),
 		_List_fromArray(
 			[
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Types$Reset)
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Reset)
 					]),
 				_List_fromArray(
 					[
 						$elm$html$Html$text('reset')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Solve)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('solution')
 					])),
 				A2($elm$html$Html$br, _List_Nil, _List_Nil),
 				A2(
@@ -6010,16 +6747,16 @@ var $author$project$Game$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$LightTools$boardView(model)
+						$author$project$LightToolsSep29$boardView(model)
 					]))
 			]));
 };
-var $author$project$Game$main = $elm$browser$Browser$element(
-	{init: $author$project$Game$init, subscriptions: $author$project$Game$subscriptions, update: $author$project$Game$update, view: $author$project$Game$view});
-_Platform_export({'Game':{'init':$author$project$Game$main(
+var $author$project$GameSep29$main = $elm$browser$Browser$element(
+	{init: $author$project$GameSep29$init, subscriptions: $author$project$GameSep29$subscriptions, update: $author$project$GameSep29$update, view: $author$project$GameSep29$view});
+_Platform_export({'GameSep29':{'init':$author$project$GameSep29$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
 
-  var app = Elm.Game.init({ node: document.getElementById("elm") });
+  var app = Elm.GameSep29.init({ node: document.getElementById("elm") });
 }
 catch (e)
 {
