@@ -5352,18 +5352,15 @@ var $author$project$GameSep29$allOffButOne = F3(
 			positions);
 		return A5($author$project$TypesSep29$Model, lights, _List_Nil, $elm$core$Dict$empty, boardSize, levelNum);
 	});
-var $author$project$GameSep29$initLitX = 1;
-var $author$project$GameSep29$initLitY = 0;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$GameSep29$p = 3;
-var $author$project$GameSep29$size = 4;
 var $author$project$GameSep29$init = function (_v0) {
 	return _Utils_Tuple2(
 		A3(
 			$author$project$GameSep29$allOffButOne,
-			_Utils_Tuple3($author$project$GameSep29$initLitX, $author$project$GameSep29$initLitY, 1),
-			$author$project$GameSep29$size,
+			_Utils_Tuple3((4 / 4) | 0, (4 / 4) | 0, 1),
+			4,
 			$author$project$GameSep29$p),
 		$elm$core$Platform$Cmd$none);
 };
@@ -5415,7 +5412,7 @@ var $author$project$GameSep29$colIndices = function (n) {
 		$author$project$GameSep29$rowIndices(n),
 		_List_fromArray(
 			[
-				{x: $author$project$GameSep29$size + 1, y: $author$project$GameSep29$size + 1}
+				{x: n + 1, y: n + 1}
 			]));
 };
 var $author$project$LightToolsSep29$adjacent01 = F2(
@@ -5701,8 +5698,8 @@ var $pzp1997$assoc_list$AssocList$insert = F3(
 				_Utils_Tuple2(key, value),
 				alteredAlist));
 	});
-var $author$project$GameSep29$etAdd = F4(
-	function (m, ptrow1, ptrow2, alpha) {
+var $author$project$GameSep29$etAdd = F5(
+	function (m, ptrow1, ptrow2, alpha, size) {
 		return A3(
 			$elm$core$List$foldl,
 			F2(
@@ -5748,7 +5745,7 @@ var $author$project$GameSep29$etAdd = F4(
 					}
 				}),
 			m,
-			$author$project$GameSep29$colIndices($author$project$GameSep29$size));
+			$author$project$GameSep29$colIndices(size));
 	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
@@ -5762,8 +5759,8 @@ var $elm$core$List$head = function (list) {
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$GameSep29$columnEliminate = F3(
-	function (col, indices, m) {
+var $author$project$GameSep29$columnEliminate = F4(
+	function (col, indices, m, size) {
 		if (!$elm$core$List$length(indices)) {
 			return m;
 		} else {
@@ -5789,7 +5786,7 @@ var $author$project$GameSep29$columnEliminate = F3(
 								$pzp1997$assoc_list$AssocList$get,
 								_Utils_Tuple2(row, col),
 								mat));
-						return A4($author$project$GameSep29$etAdd, mat, top, row, -el);
+						return A5($author$project$GameSep29$etAdd, mat, top, row, -el, size);
 					}),
 				m,
 				A2(
@@ -5797,7 +5794,7 @@ var $author$project$GameSep29$columnEliminate = F3(
 					function (row) {
 						return !_Utils_eq(row, top);
 					},
-					$author$project$GameSep29$rowIndices($author$project$GameSep29$size)));
+					$author$project$GameSep29$rowIndices(size)));
 		}
 	});
 var $elm$core$List$drop = F2(
@@ -5821,8 +5818,8 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $author$project$GameSep29$etMul = F3(
-	function (m, ptrow, alpha) {
+var $author$project$GameSep29$etMul = F4(
+	function (m, ptrow, alpha, size) {
 		return A3(
 			$elm$core$List$foldl,
 			F2(
@@ -5843,7 +5840,7 @@ var $author$project$GameSep29$etMul = F3(
 					}
 				}),
 			m,
-			$author$project$GameSep29$colIndices($author$project$GameSep29$size));
+			$author$project$GameSep29$colIndices(size));
 	});
 var $pzp1997$assoc_list$AssocList$empty = $pzp1997$assoc_list$AssocList$D(_List_Nil);
 var $author$project$GameSep29$etSwap = F3(
@@ -5883,8 +5880,8 @@ var $author$project$GameSep29$pinverse = function (x) {
 		0,
 		$elm$core$List$head(list));
 };
-var $author$project$GameSep29$raiseNonzeroLowerEntry = F3(
-	function (col, indices, m) {
+var $author$project$GameSep29$raiseNonzeroLowerEntry = F4(
+	function (col, indices, m, size) {
 		if (!$elm$core$List$length(indices)) {
 			return m;
 		} else {
@@ -5920,21 +5917,23 @@ var $author$project$GameSep29$raiseNonzeroLowerEntry = F3(
 							$pzp1997$assoc_list$AssocList$get,
 							_Utils_Tuple2(top, col),
 							m));
-					return (!_Utils_eq(top, row)) ? A3(
+					return (!_Utils_eq(top, row)) ? A4(
 						$author$project$GameSep29$etMul,
 						A3($author$project$GameSep29$etSwap, m, row, top),
 						row,
-						$author$project$GameSep29$pinverse(el)) : A3(
+						$author$project$GameSep29$pinverse(el),
+						size) : A4(
 						$author$project$GameSep29$etMul,
 						m,
 						row,
-						$author$project$GameSep29$pinverse(el));
+						$author$project$GameSep29$pinverse(el),
+						size);
 				}
 			}
 		}
 	});
-var $author$project$GameSep29$gaussianEliminate = F2(
-	function (m, indices) {
+var $author$project$GameSep29$gaussianEliminate = F3(
+	function (m, indices, size) {
 		return A3(
 			$elm$core$List$foldl,
 			F2(
@@ -5942,11 +5941,12 @@ var $author$project$GameSep29$gaussianEliminate = F2(
 					var mat = _v0.a;
 					var rIndices = _v0.b;
 					return _Utils_Tuple2(
-						A3(
+						A4(
 							$author$project$GameSep29$columnEliminate,
 							col,
 							rIndices,
-							A3($author$project$GameSep29$raiseNonzeroLowerEntry, col, rIndices, mat)),
+							A4($author$project$GameSep29$raiseNonzeroLowerEntry, col, rIndices, mat, size),
+							size),
 						A2($elm$core$List$drop, 1, rIndices));
 				}),
 			_Utils_Tuple2(
@@ -6229,12 +6229,12 @@ var $author$project$GameSep29$update = F2(
 				return _Utils_Tuple2(
 					A3(
 						$author$project$GameSep29$allOffButOne,
-						_Utils_Tuple3(0, 0, 1),
-						$author$project$GameSep29$size,
+						_Utils_Tuple3((model.size / 4) | 0, (model.size / 4) | 0, 1),
+						model.size,
 						$author$project$GameSep29$p),
 					$elm$core$Platform$Cmd$none);
 			case 'Solve':
-				var solCol = {x: $author$project$GameSep29$size + 1, y: $author$project$GameSep29$size + 1};
+				var solCol = {x: model.size + 1, y: model.size + 1};
 				var neighbor0Sum = F2(
 					function (_v14, sol1) {
 						var x0 = _v14.a;
@@ -6349,7 +6349,7 @@ var $author$project$GameSep29$update = F2(
 													return $elm$core$Maybe$Just(
 														A2($elm$core$Basics$modBy, model.p, (model.p + num) + state.brightness));
 												} else {
-													return (_Utils_cmp(x + y, $author$project$GameSep29$size - 1) < 0) ? $elm$core$Maybe$Just(
+													return (_Utils_cmp(x + y, model.size - 1) < 0) ? $elm$core$Maybe$Just(
 														A2(
 															$elm$core$Debug$log,
 															'xy',
@@ -6368,10 +6368,11 @@ var $author$project$GameSep29$update = F2(
 							var col = _v4.b;
 							return _Utils_eq(col, solCol);
 						}),
-					A2(
+					A3(
 						$author$project$GameSep29$gaussianEliminate,
 						A2($elm$core$Debug$log, 'coefmat', augmentedMatrix),
-						$author$project$GameSep29$colIndices(model.size)).a);
+						$author$project$GameSep29$colIndices(model.size),
+						model.size).a);
 				var determined1 = A3(
 					$pzp1997$assoc_list$AssocList$foldl,
 					F3(
@@ -6450,10 +6451,10 @@ var $author$project$GameSep29$update = F2(
 					A3(
 						$author$project$GameSep29$initialize,
 						A2($elm$core$Debug$log, 'random', rseq),
-						$author$project$GameSep29$size,
+						model.size,
 						$author$project$GameSep29$p),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'Clicked':
 				var _v15 = msg.a;
 				var x = _v15.a;
 				var y = _v15.b;
@@ -6464,8 +6465,28 @@ var $author$project$GameSep29$update = F2(
 						_Utils_Tuple3(x, y, c),
 						model),
 					$elm$core$Platform$Cmd$none);
+			case 'Harder':
+				var nextSize = (model.size > 6) ? model.size : ((model.size >= 4) ? (model.size + 2) : (model.size + 1));
+				return _Utils_Tuple2(
+					A3(
+						$author$project$GameSep29$allOffButOne,
+						_Utils_Tuple3((nextSize / 4) | 0, (nextSize / 4) | 0, 1),
+						nextSize,
+						$author$project$GameSep29$p),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var nextSize = (model.size <= 2) ? model.size : ((model.size > 4) ? (model.size - 2) : (model.size - 1));
+				return _Utils_Tuple2(
+					A3(
+						$author$project$GameSep29$allOffButOne,
+						_Utils_Tuple3((nextSize / 4) | 0, (nextSize / 4) | 0, 1),
+						nextSize,
+						$author$project$GameSep29$p),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$TypesSep29$Easier = {$: 'Easier'};
+var $author$project$TypesSep29$Harder = {$: 'Harder'};
 var $author$project$TypesSep29$Reset = {$: 'Reset'};
 var $author$project$TypesSep29$Solve = {$: 'Solve'};
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -6704,6 +6725,8 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
@@ -6720,7 +6743,8 @@ var $author$project$GameSep29$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$TypesSep29$Reset)
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Reset),
+						A2($elm$html$Html$Attributes$style, 'font-size', '30px')
 					]),
 				_List_fromArray(
 					[
@@ -6730,11 +6754,34 @@ var $author$project$GameSep29$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$TypesSep29$Solve)
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Solve),
+						A2($elm$html$Html$Attributes$style, 'font-size', '30px')
 					]),
 				_List_fromArray(
 					[
 						$elm$html$Html$text('solution')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'font-size', '30px'),
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Easier)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('易')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'font-size', '30px'),
+						$elm$html$Html$Events$onClick($author$project$TypesSep29$Harder)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('難')
 					])),
 				A2($elm$html$Html$br, _List_Nil, _List_Nil),
 				A2(

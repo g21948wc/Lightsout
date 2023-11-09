@@ -18,6 +18,8 @@ type Msg = Determine
     | RandGenerated (List Int)
     | Clicked Position
     | Solve
+    | Harder
+    | Easier
 
     
 
