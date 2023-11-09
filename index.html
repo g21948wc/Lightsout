@@ -6466,21 +6466,23 @@ var $author$project$GameSep29$update = F2(
 						model),
 					$elm$core$Platform$Cmd$none);
 			case 'Harder':
-				return (model.size < 6) ? _Utils_Tuple2(
+				var nextSize = (model.size > 6) ? model.size : ((model.size >= 4) ? (model.size + 2) : (model.size + 1));
+				return _Utils_Tuple2(
 					A3(
 						$author$project$GameSep29$allOffButOne,
-						_Utils_Tuple3(((model.size + 1) / 4) | 0, ((model.size + 1) / 4) | 0, 1),
-						model.size + 1,
+						_Utils_Tuple3((nextSize / 4) | 0, (nextSize / 4) | 0, 1),
+						nextSize,
 						$author$project$GameSep29$p),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					$elm$core$Platform$Cmd$none);
 			default:
-				return (model.size > 2) ? _Utils_Tuple2(
+				var nextSize = (model.size <= 2) ? model.size : ((model.size > 4) ? (model.size - 2) : (model.size - 1));
+				return _Utils_Tuple2(
 					A3(
 						$author$project$GameSep29$allOffButOne,
-						_Utils_Tuple3(((model.size - 1) / 4) | 0, ((model.size - 1) / 4) | 0, 1),
-						model.size - 1,
+						_Utils_Tuple3((nextSize / 4) | 0, (nextSize / 4) | 0, 1),
+						nextSize,
 						$author$project$GameSep29$p),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$TypesSep29$Easier = {$: 'Easier'};

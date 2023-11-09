@@ -385,18 +385,27 @@ update msg model =
         Clicked (x,y,c) -> 
             (rotation (x,y,c) model, Cmd.none)
         Harder ->
-            if model.size < 6 then
-                --(allOffButOne ((size//4), (size//4), 1) size p, Cmd.none)
-                (allOffButOne (((model.size+1)//4), ((model.size+1)//4), 1) (model.size+1) p
+            let
+                nextSize = if model.size > 6 then
+                               model.size
+                           else if model.size >= 4 then
+                                    model.size+2
+                                else
+                                    model.size+1
+            in
+                (allOffButOne (nextSize//4, nextSize//4, 1) nextSize p
                 ,Cmd.none)
-            else
-                (model, Cmd.none)
         Easier ->
-            if model.size > 2 then
-                (allOffButOne (((model.size-1)//4), ((model.size-1)//4), 1) (model.size-1) p
+            let
+                nextSize = if model.size <= 2 then
+                               model.size
+                           else if model.size > 4 then
+                                    model.size-2
+                                else
+                                    model.size-1
+            in
+                (allOffButOne (nextSize//4, nextSize//4, 1) nextSize p
                 ,Cmd.none)
-            else
-                (model, Cmd.none)
             
 
             
