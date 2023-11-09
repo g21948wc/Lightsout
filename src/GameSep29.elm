@@ -19,19 +19,15 @@ main = Browser.element {init = init
                        ,subscriptions = subscriptions
                        }
 
-size = 4 -- if the size is an even integer and p >2, then the laplacian is invertible.
+
 p = 3
 initLitX = 1
 initLitY = 0
 init: () -> (Model, Cmd Msg)
-init _ = ( allOffButOne(initLitX,initLitY,1) size p
-            --allOffButOne ((size//4), (size//4), 1) size p
+init _ = (allOffButOne ((4//4), (4//4), 1) 4 p
           ,Cmd.none
           )
 
-randomSeq: Random.Generator (List Int)
-randomSeq  =
-    Random.list (size//2) (Random.int 0 (p-1))
 
 allOffButOne: Position -> Int -> Int -> Model
 allOffButOne pos boardSize levelNum =
@@ -132,8 +128,8 @@ adjacent v w =
         List.member (dx, dy) [(0,1), (1,0), (1,-1), (-1, 1), (-1, 0), (0,-1)]
 
 colIndices: Int -> List Point
-colIndices n =
-    (rowIndices n)++[{x=size+1, y=size+1}]
+colIndices n  =
+    (rowIndices n)++[{x=n+1, y=n+1}]
 
 rowIndices: Int -> List Point
 rowIndices n = 
@@ -166,16 +162,16 @@ makeTmatrix: Int -> Tmatrix
 makeTmatrix n = 
     List.foldl insert ADict.empty (pairs n)
 
-etMul: Tmatrix -> Point -> Int -> Tmatrix
-etMul m ptrow alpha = 
+etMul: Tmatrix -> Point -> Int -> Int -> Tmatrix
+etMul m ptrow alpha size = 
     List.foldl (\ptcol tm -> case ADict.get (ptrow, ptcol) tm of
                                 Just el -> ADict.insert (ptrow, ptcol) 
                                             (modBy p (alpha * el)) tm
                                 Nothing -> tm
                 ) m (colIndices size)
 
-etAdd: Tmatrix -> Point -> Point -> Int -> Tmatrix --row2+(row1*alpha)
-etAdd m ptrow1 ptrow2 alpha = 
+etAdd: Tmatrix -> Point -> Point -> Int -> Int -> Tmatrix --row2+(row1*alpha)
+etAdd m ptrow1 ptrow2 alpha size = 
     List.foldl (\ptcol tm -> case ADict.get (ptrow1, ptcol) tm of
                                 Just el -> 
                                     case ADict.get (ptrow2, ptcol) tm of
@@ -229,8 +225,8 @@ pinverse x =
     in
         Maybe.withDefault 0 <| List.head list
 
-raiseNonzeroLowerEntry: Point -> List Point -> Tmatrix -> Tmatrix
-raiseNonzeroLowerEntry col indices m =
+raiseNonzeroLowerEntry: Point -> List Point -> Tmatrix -> Int -> Tmatrix
+raiseNonzeroLowerEntry col indices m size =
     if (List.length indices) == 0 then
         m
     else
@@ -256,13 +252,13 @@ raiseNonzeroLowerEntry col indices m =
                                  Maybe.withDefault 0 <| ADict.get (top, col) m
                         in
                             if top /= row then
-                                etMul (etSwap m row top ) row (pinverse el)
+                                etMul (etSwap m row top ) row (pinverse el) size
                             else
-                                etMul m row (pinverse el)
+                                etMul m row (pinverse el) size
     
             
-columnEliminate: Point -> List Point -> Tmatrix -> Tmatrix
-columnEliminate col indices m = 
+columnEliminate: Point -> List Point -> Tmatrix -> Int -> Tmatrix
+columnEliminate col indices m size = 
     if (List.length indices) == 0 then
         m
     else 
@@ -277,14 +273,17 @@ columnEliminate col indices m =
                                 let
                                     el = Maybe.withDefault 0 <| ADict.get (row, col) mat
                                 in
-                                    etAdd mat top row (-el)
+                                    etAdd mat top row (-el) size
                            )m (List.filter (\row -> row /= top) (rowIndices size))
 
                             
-gaussianEliminate: Tmatrix -> List Point -> (Tmatrix, List Point)
-gaussianEliminate m indices =
+gaussianEliminate: Tmatrix -> List Point -> Int -> (Tmatrix, List Point)
+gaussianEliminate m indices size =
     List.foldl (\col (mat,rIndices)  ->
-                    (columnEliminate col rIndices <|  raiseNonzeroLowerEntry col rIndices mat, List.drop 1 rIndices)
+                    (columnEliminate col rIndices 
+                         (raiseNonzeroLowerEntry col rIndices mat size)
+                         size
+                    , List.drop 1 rIndices )
                ) (m, List.reverse indices |> (List.drop 1) |> List.reverse)  indices
                 
 update: Msg -> Model -> (Model, Cmd Msg)
@@ -292,11 +291,11 @@ update msg model =
     case msg of
         Determine ->  (determine model, Cmd.none)
         Complete -> (complete model, Cmd.none)
-        Reset -> --(allOffButOne ((size//4), (size//4), 1) size p, Cmd.none)
-                 (allOffButOne (0, 0, 1) size p, Cmd.none)
+        Reset -> (allOffButOne ((model.size//4), (model.size//4), 1) model.size p, Cmd.none)
+                --(allOffButOne (0, 0, 1) model.size p, Cmd.none)
         Solve ->
             let
-                solCol = {x=size+1,y=size+1}
+                solCol = {x=model.size+1,y=model.size+1}
                 augmentedMatrix1 = Dict.foldl (\(x,y,c) state dict ->
                                             if c==1 && state.brightness > 0 then
                                                 ADict.insert ({x=x,y=y},solCol) (modBy model.p (model.p - state.brightness)) dict
@@ -325,7 +324,7 @@ update msg model =
                                                       ADict.update ({x=x,y=y},solCol)
                                                           (\s -> case s of
                                                                      Just num -> Just <| modBy model.p (model.p + num + state.brightness)
-                                                                     Nothing ->  if x+y < (size-1) then
+                                                                     Nothing ->  if x+y < (model.size-1) then
                                                                                      Just <| Debug.log "xy" <|modBy model.p (model.p + state.brightness)
                                                                                  else
                                                                                      Nothing
@@ -338,7 +337,7 @@ update msg model =
                                        
 
                 solution1 = ADict.filter (\(row,col) n -> col==solCol) <| Tuple.first <|
-                           gaussianEliminate (Debug.log "coefmat" <| augmentedMatrix) (colIndices model.size)
+                           gaussianEliminate (Debug.log "coefmat" <| augmentedMatrix) (colIndices model.size) model.size
 
                 neighbor0Sum: (Int,Int) -> (Dict Position State) -> Int
                 neighbor0Sum (x0,y0) sol1 =
@@ -382,20 +381,48 @@ update msg model =
             in
                 ({model | determined = determined}, Cmd.none)
         RandGenerated rseq  ->
-            (initialize (Debug.log "random" <| rseq) size p, Cmd.none)
+            (initialize (Debug.log "random" <| rseq) model.size p, Cmd.none)
         Clicked (x,y,c) -> 
             (rotation (x,y,c) model, Cmd.none)
+        Harder ->
+            if model.size < 6 then
+                --(allOffButOne ((size//4), (size//4), 1) size p, Cmd.none)
+                (allOffButOne (((model.size+1)//4), ((model.size+1)//4), 1) (model.size+1) p
+                ,Cmd.none)
+            else
+                (model, Cmd.none)
+        Easier ->
+            if model.size > 2 then
+                (allOffButOne (((model.size-1)//4), ((model.size-1)//4), 1) (model.size-1) p
+                ,Cmd.none)
+            else
+                (model, Cmd.none)
+            
+
             
 
 view: Model -> Html Msg
 view model =
     Html.div [Attr.align "center"]
         [Html.button
-             [Html.Events.onClick Reset]
+             [Html.Events.onClick Reset
+             ,Attr.style "font-size" "30px"
+             ]
              [Html.text "reset"]
         ,Html.button
-             [Html.Events.onClick Solve]
-             [Html.text "solution"]             
+             [Html.Events.onClick Solve
+             ,Attr.style "font-size" "30px"]
+             [Html.text "solution"]
+        ,Html.button
+             [Attr.style "font-size" "30px"
+             ,Html.Events.onClick Easier
+             ]
+             [Html.text "易"]                 
+        ,Html.button
+             [Attr.style "font-size" "30px"
+             ,Html.Events.onClick Harder
+             ]
+             [Html.text "難"]                 
         ,Html.br [][]
         ,svg [width "800"
              ,height "800"
